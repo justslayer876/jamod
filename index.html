@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<!-- Created with https://studio.penguinmod.com/PenguinMod-Packager/ -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <!-- We only include this to explicitly loosen the CSP of various packager environments. It does not provide any security. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: blob:">
+  <title>jamod</title>
+  <style>
+    body {
+      color: #ffffff;
+      font-family: sans-serif;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+    }
+    :root, body.is-fullscreen {
+      background-color: #000000;
+    }
+    [hidden] {
+      display: none !important;
+    }
+    h1 {
+      font-weight: normal;
+    }
+    a {
+      color: inherit;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    #app, #loading, #error, #launch {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: default;
+      user-select: none;
+      -webkit-user-select: none;
+      background-color: #000000;
+    }
+    #launch {
+      background-color: rgba(0, 0, 0, 0.7);
+      cursor: pointer;
+    }
+    .green-flag {
+      width: 80px;
+      height: 80px;
+      padding: 16px;
+      border-radius: 100%;
+      background: rgba(255, 255, 255, 0.75);
+      border: 3px solid hsla(0, 100%, 100%, 1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-sizing: border-box;
+    }
+    #loading {
+      
+    }
+    .progress-bar-outer {
+      border: 1px solid currentColor;
+      height: 10px;
+      width: 200px;
+      max-width: 200px;
+    }
+    .progress-bar-inner {
+      height: 100%;
+      width: 0;
+      background-color: currentColor;
+    }
+    .loading-text, noscript {
+      font-weight: normal;
+      font-size: 36px;
+      margin: 0 0 16px;
+    }
+    .loading-image {
+      margin: 0 0 16px;
+    }
+    #error-message, #error-stack {
+      font-family: monospace;
+      max-width: 600px;
+      white-space: pre-wrap;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+    #error-stack {
+      text-align: left;
+      max-height: 200px;
+      overflow: auto;
+    }
+    .control-button {
+      width: 2rem;
+      height: 2rem;
+      padding: 0.375rem;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: pointer;
+      border: 0;
+      border-radius: 4px;
+    }
+    .control-button:hover {
+      background: #00c3ff26;
+    }
+    .control-button.active {
+      background: #00c3ff59;
+    }
+    .fullscreen-button {
+      background: white !important;
+    }
+    .standalone-fullscreen-button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 0 0 0 4px;
+      padding: 4px;
+      cursor: pointer;
+    }
+    .sc-canvas {
+      cursor: auto;
+    }
+    .sc-monitor-root[data-opcode^="data_"] .sc-monitor-value-color {
+      background-color: #ff8c1a;
+    }
+    .sc-monitor-row-value-outer {
+      background-color: #fc662c;
+    }
+    .sc-monitor-row-value-editing .sc-monitor-row-value-outer {
+      background-color: #e25b27;
+    }
+    
+  </style>
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="data:image/png;base64,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">
+</head>
+<body>
+  <div id="app"></div>
+
+  <div id="launch" class="screen" hidden title="Click to start">
+    <div class="green-flag">
+      <svg viewBox="0 0 16.63 17.5" width="42" height="44">
+        <defs><style>.cls-1,.cls-2{fill:#007AF4;stroke:#003080;stroke-linecap:round;stroke-linejoin:round;}.cls-2{stroke-width:1.5px;}</style></defs>
+        <path class="cls-1" d="M.75,2A6.44,6.44,0,0,1,8.44,2h0a6.44,6.44,0,0,0,7.69,0V12.4a6.44,6.44,0,0,1-7.69,0h0a6.44,6.44,0,0,0-7.69,0"/>
+        <line class="cls-2" x1="0.75" y1="16.75" x2="0.75" y2="0.75"/>
+      </svg>
+    </div>
+  </div>
+
+  <div id="loading" class="screen">
+    <noscript>Enable JavaScript</noscript>
+    
+    
+    
+  </div>
+
+  <div id="error" class="screen" hidden>
+    <h1>Error</h1>
+    <details>
+      <summary id="error-message"></summary>
+      <p id="error-stack"></p>
+    </details>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    const appElement = document.getElementById('app');
+    const launchScreen = document.getElementById('launch');
+    const loadingScreen = document.getElementById('loading');
+    const loadingInner = document.getElementById('loading-inner');
+    const errorScreen = document.getElementById('error');
+    const errorScreenMessage = document.getElementById('error-message');
+    const errorScreenStack = document.getElementById('error-stack');
+
+    const handleError = (error) => {
+      console.error(error);
+      if (!errorScreen.hidden) return;
+      errorScreen.hidden = false;
+      errorScreenMessage.textContent = '' + error;
+      let debug = error && error.stack || 'no stack';
+      debug += '\nUser agent: ' + navigator.userAgent;
+      errorScreenStack.textContent = debug;
+    };
+    const setProgress = (progress) => {
+      if (loadingInner) loadingInner.style.width = progress * 100 + '%';
+    };
+    const interpolate = (a, b, t) => a + t * (b - a);
+
+    try {
+      setProgress(0.1);
+
+      const scaffolding = new Scaffolding.Scaffolding();
+      scaffolding.width = 480;
+      scaffolding.height = 720;
+      scaffolding.resizeMode = "preserve-ratio";
+      scaffolding.editableLists = false;
+      scaffolding.usePackagedRuntime = true;
+      scaffolding.setup();
+      scaffolding.appendTo(appElement);
+
+      const vm = scaffolding.vm;
+      window.scaffolding = scaffolding;
+      window.vm = scaffolding.vm;
+      window.Scratch = {
+        vm,
+        renderer: vm.renderer,
+        audioEngine: vm.runtime.audioEngine,
+        bitmapAdapter: vm.runtime.v2BitmapAdapter,
+        videoProvider: vm.runtime.ioDevices.video.provider
+      };
+
+      scaffolding.setUsername("user####".replace(/#/g, () => Math.floor(Math.random() * 10)));
+      scaffolding.setAccentColor("#00c3ff");
+
+      try {
+        scaffolding.addCloudProvider(new Scaffolding.Cloud.WebSocketProvider(["wss://clouddata.turbowarp.org","wss://clouddata.turbowarp.xyz"], "p4-@jamod.pmp"));
+      } catch (error) {
+        console.error(error);
+      }
+
+      vm.setTurboMode(false);
+      if (vm.setInterpolation) vm.setInterpolation(false);
+      if (vm.setFramerate) vm.setFramerate(30);
+      if (vm.renderer.setUseHighQualityRender) vm.renderer.setUseHighQualityRender(false);
+      if (vm.setRuntimeOptions) vm.setRuntimeOptions({
+        fencing: true,
+        miscLimits: true,
+        maxClones: 300,
+        dangerousOptimizations: false
+      });
+      if (vm.setCompilerOptions) vm.setCompilerOptions({
+        enabled: true,
+        warpTimer: false
+      });
+      if (vm.renderer.setMaxTextureDimension) vm.renderer.setMaxTextureDimension(2048);
+
+      if (typeof ScaffoldingAddons !== 'undefined') {
+        ScaffoldingAddons.run(scaffolding, {"gamepad":false,"pointerlock":false,"specialCloudBehaviors":false,"unsafeCloudBehaviors":false,"pause":false});
+      }
+
+      scaffolding.setExtensionSecurityManager({
+        getSandboxMode: () => 'unsandboxed',
+        canLoadExtensionFromProject: () => true
+      });
+      for (const extension of []) {
+        vm.extensionManager.loadExtensionURL(extension);
+      }
+
+      vm.runtime.isProjectPermissionManagerDisabled = true;
+      
+    } catch (e) {
+      handleError(e);
+    }
+  </script>
+  
+  
+    <script>
+      const getProjectData = (function() {
+        const storage = scaffolding.storage;
+        storage.onprogress = (total, loaded) => {
+          setProgress(interpolate(0.2, 0.98, loaded / total));
+        };
+        
+        storage.addWebStore(
+          [
+            storage.AssetType.ImageVector,
+            storage.AssetType.ImageBitmap,
+            storage.AssetType.Sound,
+            storage.AssetType.Font
+          ].filter(i => i),
+          (asset) => new URL('./assets/' + asset.assetId + '.' + asset.dataFormat, location).href
+        );
+        return () => new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = () => {
+          resolve(xhr.response);
+        };
+        xhr.onerror = () => {
+          if (location.protocol === 'file:') {
+            reject(new Error('Zip environment must be used from a website, not from a file URL.'));
+          } else {
+            reject(new Error('Request to load project data failed.'));
+          }
+        };
+        xhr.onprogress = (e) => {
+          if (e.lengthComputable) {
+            setProgress(interpolate(0.1, 0.2, e.loaded / e.total));
+          }
+        };
+        xhr.responseType = 'arraybuffer';
+        xhr.open('GET', "./assets/project.json");
+        xhr.send();
+      });
+      })();
+    </script>
+  <script>
+    const run = async () => {
+      const projectData = await getProjectData();
+      await scaffolding.loadProject(projectData);
+      setProgress(1);
+      loadingScreen.hidden = true;
+      if (true) {
+        scaffolding.start();
+      } else {
+        launchScreen.hidden = false;
+        launchScreen.addEventListener('click', () => {
+          launchScreen.hidden = true;
+          scaffolding.start();
+        });
+        launchScreen.focus();
+      }
+    };
+    run().catch(handleError);
+  </script>
+</body>
+</html>
